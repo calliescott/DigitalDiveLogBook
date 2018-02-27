@@ -36,11 +36,7 @@ class App extends React.Component {
         diveCount: 0,
         totalCountries: '',
         addDiveCard: false,
-        user: {
-          userFullName: '',
-          userCertification: '',
-          userPadiNumber: ''
-        }
+        user: []
       }
 
       //binding the this keyword to our functions so we can use this inside of them to reference their parent component.
@@ -73,7 +69,7 @@ class App extends React.Component {
       }
     })
 
-    const dbref = firebase.database().ref(`users / ${ this.state.user.uid }/dives`);
+    const dbref = firebase.database().ref(`/dives`);
 
     dbref.on('value', (snapshot) => {
       const data = snapshot.val();
@@ -107,10 +103,7 @@ class App extends React.Component {
 
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        console.log(user);
-        const dbref = firebase.database().ref(`users/${this.state.user.uid }`);
-        console.log(dbref);
-        dbref.push({})
+        
       })
       .catch((error) => console.log(error.code, error.message));
   }
@@ -150,13 +143,11 @@ class App extends React.Component {
       diveCompany: this.state.diveCompany,
       diveNotes: this.state.diveNotes
     }
-    console.log("dive", dive);
-    const dbref = firebase.database().ref(`users/${ this.state.user.uid }/dives`);
-    console.log("once", dbref);
+    const dbref = firebase.database().ref(`/dives`);
     //.ref is a method on the database that tells us where to store our data. in this case a collection called dives.
     //using the push array method, add the dive object and its property values to the dives collection database array.
     dbref.push(dive);
-    console.log("twice", dbref);
+ 
     //then we set the state
     this.setState({
       diveSite: '',
@@ -220,48 +211,58 @@ class App extends React.Component {
               <section>
                   <div className="wrapper">
                     {this.state.addDiveCard ?
-                      <div className="addDiveCard" value={this.state.addDiveCard} onChange={this.handleChange}>
-                        <h3>Log New Dive</h3>
-                        <form onSubmit={this.addDive}>
-                          <div className="form-container">
-                            <div className="form-container-column">
-                              <label htmlFor="diveSite">Dive Site:</label>
-                              <input type="text" placeholder="Enter dive site name." value={this.state.diveSite} onChange={this.handleChange} id="diveSite" />
+                      <div>
+                        <div className="addDiveCard" value={this.state.addDiveCard} onChange={this.handleChange}>
+                          <h3>Log New Dive</h3>
+                          <form onSubmit={this.addDive}>
+                            <div className="form-container">
+                              <div className="form-container-column">
+                                <label htmlFor="diveSite">Dive Site:</label>
+                                <input type="text"  value={this.state.diveSite} onChange={this.handleChange} id="diveSite" />
+                              </div>
+                              <div className="form-container-column">
+                                <label htmlFor="diveDate">Date:</label>
+                                <input type="text"  value={this.state.diveDate} onChange={this.handleChange} id="diveDate" />
+                              </div>
                             </div>
-                            <div className="form-container-column">
-                              <label htmlFor="diveDate">Date:</label>
-                              <input type="text" placeholder="Enter Date." value={this.state.diveDate} onChange={this.handleChange} id="diveDate" />
+                            <div className="form-container">
+                              <div className="form-container-column">
+                                <label htmlFor="diveTime">Total Time (mins):</label>
+                                <input type="text"  value={this.state.diveTime} onChange={this.handleChange} id="diveTime" />
+                              </div>
+                              <div className="form-container-column">
+                                <label htmlFor="diveLocation">Country:</label>
+                                <input type="text" value={this.state.diveLocation} onChange={this.handleChange} id="diveLocation" />
+                              </div>
                             </div>
-                          </div>
-                          <div className="form-container">
-                            <div className="form-container-column">
-                              <label htmlFor="diveTime">Total Time (mins):</label>
-                              <input type="text" placeholder="Enter Dive Length" value={this.state.diveTime} onChange={this.handleChange} id="diveTime" />
+                            <div className="form-container">
+                              <div className="form-container-column">
+                                <label htmlFor="diveDepth">Total Depth (m):</label>
+                                <input type="text"  value={this.state.diveDepth} onChange={this.handleChange} id="diveDepth" />
+                              </div>
+                              <div className="form-container-column">
+                                <label htmlFor="diveCompany">Dive Company:</label>
+                                <input type="text" value={this.state.diveCompany} onChange={this.handleChange} id="diveCompany" />
+                              </div>
                             </div>
-                            <div className="form-container-column">
-                              <label htmlFor="diveLocation">Country:</label>
-                              <input type="text" placeholder="Enter Location." value={this.state.diveLocation} onChange={this.handleChange} id="diveLocation" />
-                            </div>
-                          </div>
-                          <div className="form-container">
-                            <div className="form-container-column">
-                              <label htmlFor="diveDepth">Total Depth (m):</label>
-                              <input type="text" placeholder="Enter Depth." value={this.state.diveDepth} onChange={this.handleChange} id="diveDepth" />
-                            </div>
-                            <div className="form-container-column">
-                              <label htmlFor="diveCompany">Dive Company:</label>
-                              <input type="text" placeholder="Enter Dive Company." value={this.state.diveCompany} onChange={this.handleChange} id="diveCompany" />
-                            </div>
-                          </div>
 
-                          <div className="form-container">
-                            <div className="form-container-column">
-                              <label htmlFor="diveNotes">Dive Notes:</label>
-                              <textarea name="dive-notes" placeholder="Enter Notes." value={this.state.diveNotes} onChange={this.handleChange} id="diveNotes"></textarea>
+                            <div className="form-container">
+                              <div className="form-container-column">
+                                <label htmlFor="diveNotes">Dive Notes:</label>
+                                <textarea name="dive-notes" value={this.state.diveNotes} onChange={this.handleChange} id="diveNotes"></textarea>
+                              </div>
                             </div>
-                          </div>
-                          <input type="submit" value="Log Dive" />
-                        </form>
+                            <input type="submit" value="Log Dive" />
+                          </form>
+                        </div>
+                      
+                          <ul className="recentDives">
+                            {this.state.dives.map((dive, i) => {
+                              return (
+                                <DiveCard data={dive} key={i} />
+                              )
+                            })}
+                          </ul>
                       </div>
                         
                     : 
@@ -315,19 +316,19 @@ class App extends React.Component {
                         <h4>Create New Diver Profile</h4>
                         <div className="form-div">
                           <label htmlFor="createEmail">Email Address:</label>
-                          <input type="email" placeholder="Please enter your e-mail address" value={this.state.createEmail} id="createEmail" onChange={(event) => this.handleChange(event, "createEmail")} />
+                          <input type="email"  value={this.state.createEmail} id="createEmail" onChange={(event) => this.handleChange(event, "createEmail")} />
                         </div>
                         <div className="form-div">
                           <label htmlFor="createPassword">Password:</label>
-                          <input type="password" placeholder="Please enter your desired password" value={this.state.createPassword} id="createPassword" onChange={(event) => this.handleChange(event, "createPassword")} />
+                          <input type="password"  value={this.state.createPassword} id="createPassword" onChange={(event) => this.handleChange(event, "createPassword")} />
                         </div>
                         <div className="form-div">
                           <label htmlFor="userFullName">Full Name:</label>
-                          <input type="text" placeholder="Please enter your full name" value={this.state.userFullName} id="userFullName" onChange={(event) => this.handleChange(event, "userFullName")}/>
+                          <input type="text"  value={this.state.userFullName} id="userFullName" onChange={(event) => this.handleChange(event, "userFullName")}/>
                         </div>
                         <div className="form-div">
                           <label htmlFor="userPadiNumber">PADI Number:</label>
-                          <input type="text" placeholder="Please enter your PADI number" value={this.state.userPadiNumber} id="userPadiNumber" onChange={(event) => this.handleChange(event, "userPadiNumber")} />
+                          <input type="text"  value={this.state.userPadiNumber} id="userPadiNumber" onChange={(event) => this.handleChange(event, "userPadiNumber")} />
                         </div>
                         <div className="form-div">
                           <label htmlFor="userCertification">Certification Level:</label>
@@ -350,11 +351,11 @@ class App extends React.Component {
                         <form onSubmit={this.signIn}>
                           <div className="form-div">
                             <label htmlFor="enterEmail">Email Address:</label>
-                          <input type="email" placeholder="Please enter your email address" id="enterEmail" onChange={(event) => this.handleChange(event, "loginEmail")} />
+                          <input type="email"  id="enterEmail" onChange={(event) => this.handleChange(event, "loginEmail")} />
                           </div>
                           <div className="form-div">
                             <label htmlFor="enterPassword">Password:</label>
-                          <input type="password" placeholder="Please enter your account password" id="enterPassword" onChange={(event) => this.handleChange(event, "loginPassword")} />
+                          <input type="password" id="enterPassword" onChange={(event) => this.handleChange(event, "loginPassword")} />
                           </div>
                           <div className="form-div">
                             <button>Login</button>

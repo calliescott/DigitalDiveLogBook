@@ -135,9 +135,10 @@ footer {
 
 .sectionMainContainer {
     padding-top: 2rem;
-    height: 1200px;
+    height: 100%;
     background: $baseColor1;
     width: 100%;
+    padding-bottom: 20rem;
 }
 
 .userProfile {
@@ -195,14 +196,17 @@ a {
 
 .addDiveCard, .diveCard {
     border-radius: 12px;
-    box-shadow: 0 2px 6px 0  hsla(0, 0%, 0%, 0.2);
     padding: 40px;
     margin-bottom: 20px;
     background: #FFFFFF;
 }
 
+.diveCard {
+    border: 6px solid $accentColor1;
+}
 .addDiveCard {
     border: 6px solid $primaryColor2;
+    background: $primaryColor;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
