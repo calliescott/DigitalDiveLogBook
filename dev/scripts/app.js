@@ -24,26 +24,56 @@ class App extends React.Component {
       //creating empty user details including starting two counters at 0 (dives logged and countries dived)
       //creating an empty diveSite array with an object with empty fields within it.
       this.state = {
-        userFullName: '',
-        userCertifcationLevel: '',
-        userPadiNumber: '',
+        userLogin: 'userLoginContainer',
+        userSignIn: 'userSignInContainer',
+        createEmail: '',
+        createPassword: '',
+        loginEmail: '',
+        loginPassword: '',
+        loggedIn: false,
+        loggedDives: false,
+        dives: [],
         diveCount: 0,
-        totalCountries: 0,
-        dives: []
+        totalCountries: '',
+        addDiveCard: false,
+        user: {
+          userFullName: '',
+          userCertification: '',
+          userPadiNumber: ''
+        }
       }
-      //need to bind this to the logDiveLinkClicked() function inorder to use the this keyword inside of it.
+
+      //binding the this keyword to our functions so we can use this inside of them to reference their parent component.
+      this.createUser = this.createUser.bind(this);
+      this.signIn = this.signIn.bind(this);
+      this.signOut = this.signOut.bind(this);
       this.logDiveLinkClicked = this.logDiveLinkClicked.bind(this);
-      //need to bind this to the accessBucketlistLinkClicked() function inorder to use the this keyword inside of it.
-      this.accessBucketlistLinkClicked = this.accessBucketlistLinkClicked.bind(this);
-      //need to bind this to the handleSubmit() function in order to use the this keyword inside of it for our form.
-      this.handleSubmit = this.handleSubmit.bind(this);
-      //need to bind this to the handleChange() function in order to use the this keyword inside of it for our form.
+      this.addDive = this.addDive.bind(this);
       this.handleChange = this.handleChange.bind(this);
+      this.handleUserChange = this.handleUserChange.bind(this);
     } //constructor lifecycle ends
 
-  //creating link to our database
+
+
+  //creating link to our database once App component renders
   componentDidMount() {
-    const dbref = firebase.database().ref('/dives');
+    firebase.auth().onAuthStateChanged((response) => {
+      console.log(response);
+      if (response) {
+        this.setState({
+          loggedIn: true,
+          user: response
+        })
+      }
+      else {
+        this.setState({
+          loggedIn: false,
+          user: {}
+        })
+      }
+    })
+
+    const dbref = firebase.database().ref(`users / ${ this.state.user.uid }/dives`);
 
     dbref.on('value', (snapshot) => {
       const data = snapshot.val();
@@ -56,24 +86,59 @@ class App extends React.Component {
       console.log(state);
       this.setState({
         dives: state, 
-        diveCount: this.state.diveCount
+        diveCount: this.state.dives.length
       });
     });
+    
+  }
+
+  signOut() {
+    console.log("Sign out working!");
+    firebase.auth().signOut();
+    this.setState({
+      loggedIn: false
+    })
+  }
+
+  createUser(e) {
+    e.preventDefault();
+    const email = this.state.createEmail;
+    const password = this.state.createPassword;
+
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((user) => {
+        console.log(user);
+        const dbref = firebase.database().ref(`users/${this.state.user.uid }`);
+        console.log(dbref);
+        dbref.push({})
+      })
+      .catch((error) => console.log(error.code, error.message));
+  }
+
+  signIn() {
+    console.log("signing in!");
+    const email = this.state.enterEmail;
+    const password = this.state.enterPassword;
+
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        console.log(user);
+      });
   }
 
   //creating the logDiveLinkClicked function
-  logDiveLinkClicked() {
-    console.log("It worked");
-    this.addDiveCard.addClass.toggle("hidden");
+  logDiveLinkClicked(e) {
+    e.preventDefault();
+    this.setState({
+      addDiveCard: true
+    });
+    
   }
-  //creating the accessBucketListLinkClicked function
-  accessBucketlistLinkClicked() {
 
-  }
 
   //Creating the method that is used to handle the submit of our form
   //Using e.preventDefault() to stop the form from submitting
-  handleSubmit(e) {
+  addDive(e) {
     e.preventDefault();
     //on submit, create a new object that represents the dive
     const dive = {
@@ -85,91 +150,225 @@ class App extends React.Component {
       diveCompany: this.state.diveCompany,
       diveNotes: this.state.diveNotes
     }
-    const dbref = firebase.database().ref('/dives');
+    console.log("dive", dive);
+    const dbref = firebase.database().ref(`users/${ this.state.user.uid }/dives`);
+    console.log("once", dbref);
     //.ref is a method on the database that tells us where to store our data. in this case a collection called dives.
     //using the push array method, add the dive object and its property values to the dives collection database array.
     dbref.push(dive);
+    console.log("twice", dbref);
     //then we set the state
     this.setState({
-      diveCount: this.state.diveCount + 1,//this changes the dive count number in the header to match number of dives logged.
       diveSite: '',
       diveDate: '',
       diveLocation: '',
       diveDepth: '',
       diveTime: '',
       diveCompany: '',
-      diveNotes: ''
+      diveNotes: '', 
+      addDiveCard: false, 
+      loggedDives: true
     });
-    console.log(this.state.diveCount);
+
   }
+  
+  handleUserChange(event, field) {
+    const newState = Object.assign({}, this.state);
+    newState[field] = event.target.value;
+    this.setState(newState);
+  }
+
   //creating the handleChange function for our main form inputs
   handleChange(e) {
     this.setState({
       [e.target.id]: e.target.value
-    });
+    })
   }
-
-  
-
-
     render() {
       return (
         <div>
-          <header>
-            <div className="wrapper">
-              <div className="header-main">
-                <h4>Name: {this.state.userFullName}</h4>
-                <h4>Certification Level: {this.state.userCertificationLevel}</h4>
-                <h4>PADI Number: {this.state.userPadiNumber}</h4>
-                <h4>Total Dives Logged: {this.state.diveCount}</h4>
-                <h4>Total Countries Visited: {this.state.totalCountries}</h4>
-              </div>
+          {this.state.loggedIn ? 
+            <div className="userLoggedInContainer">
+              <header>
+                <div className="wrapper">
+                  <img src="../images/flippersLarge.png" alt=""/>
+                  <h1>Bubbles</h1>
+                  <h3>A digital log book created for scuba diving enthusiasts around the world.</h3>
+                </div>
+              </header>
               <nav className="nav">
-                <a href="" onClick={this.logDiveLinkClicked}>Log Recent Dive</a>
-                <a href="" onClick={this.accessBucketlistLinkClicked}>Bucketlist Dives</a>
+                <div className="wrapper">
+                  <div className="nav-img">
+                    <img src="../images/diveLogo.png" alt=""/>
+                    <h4>Bubbles</h4>
+                  </div>
+                  <div className="nav-links">
+                    <a href="#" className="nav-left" onClick={this.logDiveLinkClicked}>Log Recent Dive</a>
+                    <a href="#" className="nav-right" onClick={this.signOut}>Sign Out</a>
+                  </div>
+                </div>
               </nav>
-            </div>
-          </header>
-          <section>
-            <div className="wrapper">
-              <div className="addDiveCard hidden">
-                <form onSubmit={this.handleSubmit}>
-                  <label htmlFor="diveSite">Dive Site:</label>
-                  <input type="text" placeholder="Enter dive site name." value={this.state.diveSite} onChange={this.handleChange} id="diveSite"/>
+              <section className="sectionMainContainer">
+                <div className="userProfile">
+                  <div className="wrapper">
+                    <h4>Name: {this.state.userFullName}</h4>
+                    <h4>Certification Level: {this.state.userCertification}</h4>
+                    <h4>PADI Number: {this.state.userPadiNumber}</h4>
+                    <h4>Total Dives Logged: {this.state.dives.length}</h4>
+                  </div>
+                </div>
+              <section>
+                  <div className="wrapper">
+                    {this.state.addDiveCard ?
+                      <div className="addDiveCard" value={this.state.addDiveCard} onChange={this.handleChange}>
+                        <h3>Log New Dive</h3>
+                        <form onSubmit={this.addDive}>
+                          <div className="form-container">
+                            <div className="form-container-column">
+                              <label htmlFor="diveSite">Dive Site:</label>
+                              <input type="text" placeholder="Enter dive site name." value={this.state.diveSite} onChange={this.handleChange} id="diveSite" />
+                            </div>
+                            <div className="form-container-column">
+                              <label htmlFor="diveDate">Date:</label>
+                              <input type="text" placeholder="Enter Date." value={this.state.diveDate} onChange={this.handleChange} id="diveDate" />
+                            </div>
+                          </div>
+                          <div className="form-container">
+                            <div className="form-container-column">
+                              <label htmlFor="diveTime">Total Time (mins):</label>
+                              <input type="text" placeholder="Enter Dive Length" value={this.state.diveTime} onChange={this.handleChange} id="diveTime" />
+                            </div>
+                            <div className="form-container-column">
+                              <label htmlFor="diveLocation">Country:</label>
+                              <input type="text" placeholder="Enter Location." value={this.state.diveLocation} onChange={this.handleChange} id="diveLocation" />
+                            </div>
+                          </div>
+                          <div className="form-container">
+                            <div className="form-container-column">
+                              <label htmlFor="diveDepth">Total Depth (m):</label>
+                              <input type="text" placeholder="Enter Depth." value={this.state.diveDepth} onChange={this.handleChange} id="diveDepth" />
+                            </div>
+                            <div className="form-container-column">
+                              <label htmlFor="diveCompany">Dive Company:</label>
+                              <input type="text" placeholder="Enter Dive Company." value={this.state.diveCompany} onChange={this.handleChange} id="diveCompany" />
+                            </div>
+                          </div>
 
-                  <label htmlFor="diveDate">Dive Date:</label>
-                  <input type="text" placeholder="Enter Date." value={this.state.diveDate} onChange={this.handleChange} id="diveDate" />
+                          <div className="form-container">
+                            <div className="form-container-column">
+                              <label htmlFor="diveNotes">Dive Notes:</label>
+                              <textarea name="dive-notes" placeholder="Enter Notes." value={this.state.diveNotes} onChange={this.handleChange} id="diveNotes"></textarea>
+                            </div>
+                          </div>
+                          <input type="submit" value="Log Dive" />
+                        </form>
+                      </div>
+                        
+                    : 
+                        <ul className="recentDives">
+                        {this.state.dives.map((dive, i) => {
+                            return (
+                              <DiveCard data={dive} key={i} />
+                            )
+                          })}
+                        </ul>
+                    }
+                    {this.state.loggedDives ?
+                      <ul className="recentDives">
+                        {this.state.dives.map((dive, i) => {
+                          return (
+                            <DiveCard data={dive} key={i} />
+                          )
+                        })}
+                      </ul>
+                    : 
+                    null
+                    }
+                    
+                    
+                  </div>
+                  {/* /.wrapper ends */}
+                </section>
+              </section>
 
-                  <label htmlFor="diveTime">Dive Time (minutes):</label>
-                  <input type="text" placeholder="Enter Dive Length" value={this.state.diveTime} onChange={this.handleChange} id="diveTime" />
+              <footer>
+                <div className="wrapper">
+                  <p>Created by Callie Scott | <a href="https://twitter.com/_calliescott"><i className="fab fa-twitter"></i></a><a href="https://github.com/calliescott"><i className="fab fa-github"></i></a></p>
+                </div>
+              </footer>
+            </div>// ./userLoggedInContainer ends 
 
-                  <label htmlFor="diveLocation">Dive Location:</label>
-                  <input type="text" placeholder="Enter Location." value={this.state.diveLocation} onChange={this.handleChange} id="diveLocation" />
-
-                  <label htmlFor="diveDepth">Dive Depth (metres):</label>
-                  <input type="text" placeholder="Enter Depth." value={this.state.diveDepth} onChange={this.handleChange} id="diveDepth" />
-
-                  <label htmlFor="diveCompany">Dive Company:</label>
-                  <input type="text" placeholder="Enter Dive Company." value={this.state.diveCompany} onChange={this.handleChange} id="diveCompany" />
-
-                  <label htmlFor="diveNotes">Dive Notes:</label>
-                  <textarea name="dive-notes" placeholder="Enter Notes." value={this.state.diveNotes} onChange={this.handleChange} id="diveNotes"></textarea>
-
-                  <input type="submit" value="Log Dive" />
-                </form>
+          : 
+            <div className="userLoginContainer">
+              <video playsInline autoPlay muted loop poster="../images/water-min.png" className="fullscreenUserLoginContainerVideo">
+                    <source src="../images/dive-video.mp4" type="video/mp4"/>
+              </video>
+              <div className="wrapper">
+                <img src="../images/dive-Logo.png" alt=""/>
+                <h2>Bubbles</h2>
+                
+                <div className="userOptions">
+                  <h3>Digital Diving Log Book</h3>
+                  <div className="userOptionsRow">
+                    <div className="createUser">
+                      <form onSubmit={this.createUser}>
+                        <h4>Create New Diver Profile</h4>
+                        <div className="form-div">
+                          <label htmlFor="createEmail">Email Address:</label>
+                          <input type="email" placeholder="Please enter your e-mail address" value={this.state.createEmail} id="createEmail" onChange={(event) => this.handleChange(event, "createEmail")} />
+                        </div>
+                        <div className="form-div">
+                          <label htmlFor="createPassword">Password:</label>
+                          <input type="password" placeholder="Please enter your desired password" value={this.state.createPassword} id="createPassword" onChange={(event) => this.handleChange(event, "createPassword")} />
+                        </div>
+                        <div className="form-div">
+                          <label htmlFor="userFullName">Full Name:</label>
+                          <input type="text" placeholder="Please enter your full name" value={this.state.userFullName} id="userFullName" onChange={(event) => this.handleChange(event, "userFullName")}/>
+                        </div>
+                        <div className="form-div">
+                          <label htmlFor="userPadiNumber">PADI Number:</label>
+                          <input type="text" placeholder="Please enter your PADI number" value={this.state.userPadiNumber} id="userPadiNumber" onChange={(event) => this.handleChange(event, "userPadiNumber")} />
+                        </div>
+                        <div className="form-div">
+                          <label htmlFor="userCertification">Certification Level:</label>
+                          <select name="" value={this.state.userCertification} id="userCertification" onChange={(event) => this.handleChange(event, "userCertification")}>
+                            <option value="Discover Scuba Diving">Discover Scuba Diving</option>
+                            <option value="PADI Scuba Diver">PADI Scuba Diver</option>
+                            <option value="Open Water Diver">Open Water Diver</option>
+                            <option value="Divemaster">Divemaster</option>
+                            <option value="Enriched Air Diver">Enriched Air Diver</option>
+                            <option value="Assistant Instructor">Assistant Instructor</option>
+                            <option value="Open Water Scuba Instructor">Open Water Scuba Instructor</option>
+                          </select>
+                        </div>
+                        <button>Create Diver</button>
+                      </form>
+                    </div>
+                    {/* ./create-user ends */}
+                    <div className="userSignIn">
+                        <h4>Or Sign in to Diver Account</h4>
+                        <form onSubmit={this.signIn}>
+                          <div className="form-div">
+                            <label htmlFor="enterEmail">Email Address:</label>
+                          <input type="email" placeholder="Please enter your email address" id="enterEmail" onChange={(event) => this.handleChange(event, "loginEmail")} />
+                          </div>
+                          <div className="form-div">
+                            <label htmlFor="enterPassword">Password:</label>
+                          <input type="password" placeholder="Please enter your account password" id="enterPassword" onChange={(event) => this.handleChange(event, "loginPassword")} />
+                          </div>
+                          <div className="form-div">
+                            <button>Login</button>
+                          </div>
+                        </form>
+                    </div>
+                    {/* ./user-sign-in ends */}
+                  </div>
+                </div>
               </div>
-              <ul className="recentDives">
-                {this.state.dives.map((dive) => {
-                  return(
-                    <DiveCard data={dive} key={dive.key}/>
-                  )
-                })}
-              </ul>
+              {/* wrapper ends */}
             </div>
-          </section>
-          <footer>
-            <div className="wrapper"></div>
-          </footer>
+            // ./userLoginContainer ends 
+          }
         </div>
       )
     }//render lifecycle ends 
