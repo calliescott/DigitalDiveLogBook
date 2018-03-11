@@ -10,6 +10,7 @@ const DiveCard = (props) => {
             <p>Country: {props.data.diveLocation}</p>
             <p>Company:{props.data.diveCompany}</p>
             <p>Notes:{props.data.diveNotes}</p>
+            <button onClick={() => props.remove(props.data.key)}>Delete Dive</button>
         </li>
     );
 };

@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DiveCard from './loggedDiveCard';
+import DiveCard from './components/loggedDiveCard';
 
+import Header from './components/header';
+import Footer from './components/footer';
 
 // Initialize Firebase
-var config = {
+const config = {
   apiKey: "AIzaSyDieHVB0PDA4oCaxX_k_ksUSnI_vctva8o",
   authDomain: "diving-logobook-app.firebaseapp.com",
   databaseURL: "https://diving-logobook-app.firebaseio.com",
@@ -45,6 +47,7 @@ class App extends React.Component {
       this.signOut = this.signOut.bind(this);
       this.logDiveLinkClicked = this.logDiveLinkClicked.bind(this);
       this.addDive = this.addDive.bind(this);
+      this.removeDive = this.removeDive.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.handleUserChange = this.handleUserChange.bind(this);
     } //constructor lifecycle ends
@@ -69,22 +72,39 @@ class App extends React.Component {
       }
     })
 
-    const dbref = firebase.database().ref(`/dives`);
+    
+    const dbRef = firebase.database().ref();
+    dbRef.on("value", (firebaseData) => {
+      const divesArray = [];
+      const divesData = firebaseData.val();
 
-    dbref.on('value', (snapshot) => {
-      const data = snapshot.val();
-      const state = [];
-      for (let key in data) {
-        data[key].key = key;
-
-        state.push(data[key]);
+      for (let diveKey in divesData) {
+        divesData[diveKey].key = diveKey;
+        divesArray.push(divesData[diveKey]);
       }
-      console.log(state);
+
       this.setState({
-        dives: state, 
-        diveCount: this.state.dives.length
+        dives: divesArray
       });
+      
     });
+
+    
+
+    // dbref.on('value', (snapshot) => {
+    //   const data = snapshot.val();
+    //   const state = [];
+    //   for (let key in data) {
+    //     data[key].key = key;
+
+    //     state.push(data[key]);
+    //   }
+    //   console.log(state);
+    //   this.setState({
+    //     dives: state, 
+    //     diveCount: this.state.dives.length
+    //   });
+    // });
     
   }
 
@@ -134,7 +154,7 @@ class App extends React.Component {
   addDive(e) {
     e.preventDefault();
     //on submit, create a new object that represents the dive
-    const dive = {
+    const newDive = {
       diveSite: this.state.diveSite,
       diveDate: this.state.diveDate,
       diveLocation: this.state.diveLocation,
@@ -143,10 +163,10 @@ class App extends React.Component {
       diveCompany: this.state.diveCompany,
       diveNotes: this.state.diveNotes
     }
-    const dbref = firebase.database().ref(`/dives`);
+    const dbRef = firebase.database().ref();
     //.ref is a method on the database that tells us where to store our data. in this case a collection called dives.
     //using the push array method, add the dive object and its property values to the dives collection database array.
-    dbref.push(dive);
+    dbRef.push(newDive);
  
     //then we set the state
     this.setState({
@@ -161,6 +181,13 @@ class App extends React.Component {
       loggedDives: true
     });
 
+  }
+
+  removeDive(diveToRemove){
+    console.log(diveToRemove);
+    console.log("Remove Dive");
+    const dbRef = firebase.database().ref(diveToRemove);
+    dbRef.remove();
   }
   
   handleUserChange(event, field) {
@@ -180,13 +207,7 @@ class App extends React.Component {
         <div>
           {this.state.loggedIn ? 
             <div className="userLoggedInContainer">
-              <header>
-                <div className="wrapper">
-                  <img src="../images/flippersLarge.png" alt=""/>
-                  <h1>Bubbles</h1>
-                  <h3>A digital log book created for scuba diving enthusiasts around the world.</h3>
-                </div>
-              </header>
+              <Header />
               <nav className="nav">
                 <div className="wrapper">
                   <div className="nav-img">
@@ -259,7 +280,7 @@ class App extends React.Component {
                           <ul className="recentDives">
                             {this.state.dives.map((dive, i) => {
                               return (
-                                <DiveCard data={dive} key={i} />
+                                <DiveCard data={dive} key={dive.key} remove={this.removeDive} />
                               )
                             })}
                           </ul>
@@ -269,7 +290,7 @@ class App extends React.Component {
                         <ul className="recentDives">
                         {this.state.dives.map((dive, i) => {
                             return (
-                              <DiveCard data={dive} key={i} />
+                              <DiveCard data={dive} key={dive.key} remove={this.removeDive}/>
                             )
                           })}
                         </ul>
@@ -278,32 +299,21 @@ class App extends React.Component {
                       <ul className="recentDives">
                         {this.state.dives.map((dive, i) => {
                           return (
-                            <DiveCard data={dive} key={i} />
+                            <DiveCard data={dive} key={dive.key} remove={this.removeDive}/>
                           )
                         })}
                       </ul>
                     : 
                     null
-                    }
-                    
-                    
+                    } 
                   </div>
                   {/* /.wrapper ends */}
                 </section>
               </section>
-
-              <footer>
-                <div className="wrapper">
-                  <p>Created by Callie Scott | <a href="https://twitter.com/_calliescott"><i className="fab fa-twitter"></i></a><a href="https://github.com/calliescott"><i className="fab fa-github"></i></a></p>
-                </div>
-              </footer>
+              <Footer />
             </div>// ./userLoggedInContainer ends 
-
           : 
             <div className="userLoginContainer">
-              <video playsInline autoPlay muted loop poster="../images/water-min.png" className="fullscreenUserLoginContainerVideo">
-                    <source src="../images/dive-video.mp4" type="video/mp4"/>
-              </video>
               <div className="wrapper">
                 <img src="../images/dive-Logo.png" alt=""/>
                 <h2>Bubbles</h2>
