@@ -1,0 +1,55 @@
+
+.addDiveCard, .diveCard {
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 20px;
+    background: #FFFFFF;
+}
+
+.diveCard {
+    border: 6px solid $accentColor1;
+}
+.addDiveCard {
+    border: 6px solid $primaryColor2;
+    background: $primaryColor;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: space-between;
+    form {
+        padding-top: 2rem;
+        .form-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
+}
+
+.form-container-column {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 50%;
+    margin-bottom: 1.5rem;
+    input {
+        width: 70%;
+        border-bottom: 1px solid $baseColor2;
+    }
+    label {
+        width: 30%;
+        border-bottom: 1px solid $baseColor2;
+    }
+    textarea {
+        width: 100%;
+    }
+}
+
+.form-container-column:nth-child(odd) {
+    margin-right: 2rem;
+}
+
+
+.diveCard {
+    border-top: 6px solid $accentColor2;
+}

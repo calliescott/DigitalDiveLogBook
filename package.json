@@ -28,6 +28,8 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
-    "node-sass": "^4.7.1"
+    "node-sass": "^4.7.1",
+    "react-sticky": "^6.0.1",
+    "react-sticky-el": "^1.0.16"
   }
 }
