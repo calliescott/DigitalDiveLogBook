@@ -8,6 +8,7 @@
 
 html {
     font-size: 62.5%;
+    background: #DBDBDB;
 }
 
 body {
@@ -16,8 +17,10 @@ body {
     font-family: $baseFont;
     background: $baseColor1;
     font-size: 1.6rem;
-    // position: relative;
-    // overflow-x: hidden;
+}
+
+.container-div {
+    background: #DBDBDB;
 }
 
 header {
@@ -230,6 +233,7 @@ form {
     .userLoginContainer h2 {
         font-size: 10rem;
     }
+
 }
 
 .createUser form, .userSignIn {
@@ -253,6 +257,19 @@ form {
     }
 }
 
+@media (max-width: 400px) {
+    .userProfile {
+        width: 300px;
+        margin: 0 auto;
+        h4 {
+        margin: 0;
+        }
+    }
+    .diveCard {
+        width: 300px;
+        margin: 0 auto;
+    }
+}
 @media (max-width: 480px) {
     header {
         h1 {
@@ -306,9 +323,7 @@ form {
         display: none;
     }
 
-    h4 {
-        margin: 0;
-    }
+    
     .nav-img {
         width: 20%;
     }

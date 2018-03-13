@@ -16,12 +16,27 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: space-between;
+    @media (max-width: 849px) {
+        width: 500px;
+        margin: 0 auto;
+    }
+    @media (max-width: 530px) {
+        width: 400px;
+    }
+    @media (max-width: 400px) {
+        width: 300px;
+    }
     form {
         padding-top: 2rem;
         .form-container {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
+            @media (max-width: 849px) {
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+            }
         }
     }
 }
@@ -32,13 +47,22 @@
     justify-content: flex-start;
     width: 50%;
     margin-bottom: 1.5rem;
+    @media (max-width: 849px) {
+        width: 100%;
+    }
     input {
         width: 70%;
         border-bottom: 1px solid $baseColor2;
+        @media (max-width: 849px) {
+            width: 60%;
+        }
     }
     label {
         width: 30%;
         border-bottom: 1px solid $baseColor2;
+        @media (max-width: 849px) {
+            width: 40%;
+        }
     }
     textarea {
         width: 100%;

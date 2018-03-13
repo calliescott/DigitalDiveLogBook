@@ -265,7 +265,7 @@ class App extends React.Component {
         )
       }
       return (
-        <div>
+        <div className="container-div">
           {this.state.loggedIn ? 
             <div className="userLoggedInContainer">
                 <Header />
