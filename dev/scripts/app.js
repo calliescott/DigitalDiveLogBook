@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Sticky from 'react-sticky-el';
 import DiveCard from './components/loggedDiveCard';
+import UserProfile from './components/userProfile';
 
 import Header from './components/header';
 import Footer from './components/footer';
@@ -59,35 +60,44 @@ class App extends React.Component {
 
   //creating link to our database once App component renders
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((response) => {
-      if (response) {
-        this.setState({
-          loggedIn: true,
-          user: response
-        })
+    firebase.auth().onAuthStateChanged( (user) => {
+      if (user) {
+        const dbRef = firebase.database().ref(`users/${ user.uid }/dives`);
+
+        dbRef.on('value', (snapshot) => {
+
+          const data = snapshot.val();
+          const fbstate =[];
+          for (let key in data) {
+
+            const newVal = data[key];
+            newVal["fbKey"] = key;
+            fbstate.push(newVal);
+          }
+          this.setState({
+            dives: fbstate,
+            loggedIn: true, 
+            user: user
+          });
+        });
       }
       else {
         this.setState({
           loggedIn: false,
+          dives: [],
           user: {}
         })
       }
-    })
+    });
 
     const dbRef = firebase.database().ref(`users`);
-    dbRef.on("value", (snapshot) => {
-      const usersData = snapshot.val();
-      const usersArray = [];
-      for (let key in data) {
-        usersData[userKey].key = userKey;
-        usersArray.push(usersData[userKey]);
-      }
-
+      dbRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
       this.setState({
-        dives: usersArray
-      });
+        users: data
+      })
     });
-    
   }
 
   
@@ -104,7 +114,6 @@ class App extends React.Component {
 
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        console.log(user);
         const dbRef = firebase.database().ref(`users/${user.uid}`);
         dbRef.set(newDiver);
       })
@@ -118,7 +127,6 @@ class App extends React.Component {
 
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((user) => {
-        console.log(user);
       });
   }
 
@@ -276,14 +284,7 @@ class App extends React.Component {
                   </nav>
                 </Sticky>
                 <section className="sectionMainContainer">
-                  <div className="userProfile">
-                    <div className="wrapper">
-                      <h4>Name: {this.state.userFullName}</h4>
-                      <h4>Certification Level: {this.state.userCertification}</h4>
-                      <h4>PADI Number: {this.state.userPadiNumber}</h4>
-                      <h4>Total Dives Logged: {this.state.dives.length}</h4>
-                    </div>
-                  </div>
+                <UserProfile name={this.state.userFullName} cert={this.state.userCertification} number={this.state.userPadiNumber} count={this.state.dives.length}/>
                 <section>
                     <div className="wrapper">
                       {this.state.addDiveCard ?
@@ -333,7 +334,6 @@ class App extends React.Component {
                           </div>
                         
                             <ul className="recentDives">
-                            
                               {this.state.dives.map((dive, i) => {
                                 return (
                                   <DiveCard data={dive} key={dive.key} remove={this.removeDive} />
@@ -344,24 +344,13 @@ class App extends React.Component {
                           
                       : 
                           <ul className="recentDives">
-                          {this.state.dives.map((dive, i) => {
+                        {this.state.dives.map((dive, i) => {
                               return (
                                 <DiveCard data={dive} key={dive.key} remove={this.removeDive}/>
                               )
                             })}
                           </ul>
                       }
-                      {/* {this.state.loggedDives ?
-                        <ul className="recentDives">
-                          {this.state.dives.map((dive, i) => {
-                            return (
-                              <DiveCard data={dive} key={dive.key} remove={this.removeDive}/>
-                            )
-                          })}
-                        </ul>
-                      : 
-                      null
-                      }  */}
                     </div>
                     {/* /.wrapper ends */}
                   </section>
