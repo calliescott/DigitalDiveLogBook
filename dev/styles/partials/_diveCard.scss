@@ -8,10 +8,14 @@
 
 .diveCard {
     border: 6px solid $accentColor1;
+    border-top: 6px solid $accentColor2;
+    @media (max-width: 480px) {
+        margin-bottom: 20px;
+    }
 }
+
 .addDiveCard {
     border: 6px solid $primaryColor2;
-    background: $primaryColor;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -74,6 +78,20 @@
 }
 
 
-.diveCard {
-    border-top: 6px solid $accentColor2;
+.diveCardLeft {
+    float: left;
+    width: 50%;
+    @media (max-width: 400px) {
+        float: none;
+        width: 100%
+    }
+}
+
+.diveCardRight {
+    float: right;
+    width: 50%;
+    @media (max-width: 400px) {
+        float: none;
+        width: 100%
+    }
 }

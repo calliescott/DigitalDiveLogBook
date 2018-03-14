@@ -132,10 +132,22 @@ footer {
         background-color: $accentColor1;
         border-radius: 12px;
         padding: 10px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        text-align: center;
         box-shadow: 0 2px 6px 0  hsla(0, 0%, 0%, 0.2);
+    }
+}
+
+.logDiveButton {
+    color: $primaryColor2;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2);
+    width: 200px;
+    margin: 0 auto;
+    &:hover, &:focus {
+        background: #DBDBDB;
+        color: $baseColor2;
     }
 }
 
@@ -150,7 +162,7 @@ ul {
 
 h2 {
     font-family: $titleFont;
-    font-size: 15rem;
+    font-size: 13rem;
     color: $accentColor2;
     font-weight: 700;
     padding: 0;
@@ -253,7 +265,7 @@ form {
         font-size: 6rem;
     }
     .userOptions h3 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
 }
 
@@ -291,6 +303,10 @@ form {
             box-shadow: 0 2px 6px 0  hsla(0, 0%, 0%, 0.2);
         }
     }
+    .userOptions h3 {
+    h3 {
+        font-size: 1.8rem;
+    }
 }
 
 
@@ -301,9 +317,9 @@ form {
     header { 
         height: 45rem;
         h1 {
-        font-size: 5rem;
-        }
-        h3 {
+            font-size: 5rem;
+            }
+        h3 {            
             font-size: 1.6rem;
             width: 100%;
             margin: 0;
@@ -319,11 +335,11 @@ form {
     .nav {
         height: 100px;
     }
+
     .nav-img h4 {
         display: none;
     }
 
-    
     .nav-img {
         width: 20%;
     }
@@ -331,14 +347,13 @@ form {
     a {
         font-weight: regular;
     }
+
     .nav-link a {
         font-size: 1.2rem;
         padding: 0;
         text-align: center;
         width: 100%;
     }
-
-    
 
     .addDiveCard h4 {
         font-size: 2.5rem;
@@ -355,12 +370,13 @@ form {
         width: 100%;
         display: block;
     }
+
     .userLoginContainer h2 {
         font-size: 4rem;
     }
 
     .userOptions h3 {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         text-align: center;
     }
 
@@ -369,4 +385,5 @@ form {
         height: 100%;
         background: none;
     }
+}
 }

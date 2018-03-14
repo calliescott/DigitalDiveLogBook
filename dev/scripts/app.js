@@ -228,11 +228,11 @@ class App extends React.Component {
                 <label htmlFor="userFullName">Full Name:</label>
                 <input type="text" value={this.state.userFullName} id="userFullName" onChange={(event) => this.handleChange(event, "userFullName")} />
               </div>
-              <div className="form-div">
+              {/* <div className="form-div">
                 <label htmlFor="userPadiNumber">PADI Number:</label>
                 <input type="text" value={this.state.userPadiNumber} id="userPadiNumber" onChange={(event) => this.handleChange(event, "userPadiNumber")} />
-              </div>
-              <div className="form-div">
+              </div> */}
+              {/* <div className="form-div">
                 <label htmlFor="userCertification">Certification Level:</label>
                 <select name="" value={this.state.userCertification} id="userCertification" onChange={(event) => this.handleChange(event, "userCertification")}>
                   <option value="Discover Scuba Diving">Discover Scuba Diving</option>
@@ -243,7 +243,7 @@ class App extends React.Component {
                   <option value="Assistant Instructor">Assistant Instructor</option>
                   <option value="Open Water Scuba Instructor">Open Water Scuba Instructor</option>
                 </select>
-              </div>
+              </div> */}
               <button>Create Diver</button>
             </form>
         )
@@ -329,7 +329,7 @@ class App extends React.Component {
                                   <textarea name="dive-notes" value={this.state.diveNotes} onChange={this.handleChange} id="diveNotes"></textarea>
                                 </div>
                               </div>
-                              <input type="submit" value="Log Dive" />
+                              <input type="submit" value="Log Dive" className="logDiveButton"/>
                             </form>
                           </div>
                         

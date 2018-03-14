@@ -1,7 +1,13 @@
 
 .userLoginContainer {
-    height: 100%;
-    background: #DBDBDB;
+    height: 100vh;
+    background: #ffffff;
+    left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+    z-index: -1;
+    bottom: 0;
     .wrapper {
         border-radius: 12px;
         display: flex;
@@ -19,8 +25,8 @@
             padding: 2.5rem;
             width: 80%;
             border-radius: 12px;
-            box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2);
             background: $baseColor1;
+            height: 100%;
         }
     }
 }
